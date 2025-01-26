@@ -1,6 +1,51 @@
 #!/bin/bash
 
-# Define the function
+
+whatdoido(){
+    echo "The install_security_and_network_tools function installs the following tools, organized by their utilization:"
+    echo "Network Administration Tools: net-tools, tcpdump, traceroute, mtr, iperf3, dnsutils, whois, tshark, arp-scan, ettercap-common, dsniff"
+    echo "Penetration Testing Tools: metasploit-framework, wireshark, nmap, aircrack-ng, john, hashcat, zaproxy (ZAP Proxy), sqlmap, hydra, proxychains, gobuster, dirb, checksec, nikto, wpscan"
+    echo "Red Teaming & Post-Exploitation Tools: responder, bloodhound, impacket-scripts, crackmapexec, seclists, nishang, powersploit, enum4linux, recon-ng"
+    echo "Web Application & Network Forensics Tools: RouterSploit, Xplico, Apache2, Burp Suite, Maltego, Social Engineering Toolkit (SET), BeEF, zaproxy (ZAP Proxy)"
+    echo "Vulnerability Scanners & Security Tools: OpenVAS, SpiderFoot, Tor, Ngrok, libglib2.0-dev, bluepy"
+    echo "Network Utility Tools: Netcat"
+    echo "Python Tools: pipx"
+    echo "All tools have been installed successfully. You can now use them for network administration, penetration testing, vulnerability scanning, red teaming, OSINT, and more."
+}
+
+# Function to update the OS, apt, and fetch the latest version of Python and Java
+update_os_and_fetch_versions() {
+    echo "[+] Updating the OS and package repositories..."
+    sudo apt update
+    
+    sudo apt upgrade -y
+    sudo apt dist-upgrade -y
+    sudo apt autoremove -y
+    sudo apt clean
+    echo "Updating Python..."
+    
+    # Fetch and install the latest Python version
+    sudo apt install -y python3 python3-pip
+    python3 -m pip install --upgrade pip
+    
+    # Install the latest Python version if needed (Python 3.x)
+    sudo apt install -y python3-dev
+
+    python3 --version
+    pip --version
+    echo "[!] Updating Java..."
+    
+    # Fetch and install the latest Java version (OpenJDK)
+    sudo apt install -y openjdk-17-jdk  # Install OpenJDK 17 (or the latest version available in apt)
+    sudo update-alternatives --config java
+    java -version
+
+    echo "[+] OS and package repositories have been updated. The latest versions of Python and Java are now installed."
+}
+
+
+
+# This installs the security tools 
 install_security_and_network_tools() {
     echo "This script will install a comprehensive suite of tools for network administration, penetration testing, red teaming, vulnerability scanning, OSINT, and anonymity. The tools include network scanners, exploitation frameworks, web servers, and more."
 
@@ -146,31 +191,7 @@ install_security_and_network_tools() {
     echo "Installation of all tools, including OpenVAS, SpiderFoot, Tor, Ngrok, ZAP, and additional libraries, is complete!"
 }
 
-# Call the function
+whatdoido
+update_os_and_fetch_versions
 install_security_and_network_tools
 
-# Echo explaining what the script does, organized by utilization
-echo "The install_security_and_network_tools function installs the following tools, organized by their utilization:"
-
-# Network Administration Tools
-echo "Network Administration Tools: net-tools, tcpdump, traceroute, mtr, iperf3, dnsutils, whois, tshark, arp-scan, ettercap-common, dsniff"
-
-# Penetration Testing Tools
-echo "Penetration Testing Tools: metasploit-framework, wireshark, nmap, aircrack-ng, john, hashcat, zaproxy (ZAP Proxy), sqlmap, hydra, proxychains, gobuster, dirb, checksec, nikto, wpscan"
-
-# Red Teaming and Post-Exploitation Tools
-echo "Red Teaming & Post-Exploitation Tools: responder, bloodhound, impacket-scripts, crackmapexec, seclists, nishang, powersploit, enum4linux, recon-ng"
-
-# Web Application and Network Forensics
-echo "Web Application & Network Forensics Tools: RouterSploit, Xplico, Apache2, Burp Suite, Maltego, Social Engineering Toolkit (SET), BeEF, zaproxy (ZAP Proxy)"
-
-# Vulnerability Scanners and Security Tools
-echo "Vulnerability Scanners & Security Tools: OpenVAS, SpiderFoot, Tor, Ngrok, libglib2.0-dev, bluepy"
-
-# Network Utility Tools
-echo "Network Utility Tools: Netcat"
-
-# Python Tools
-echo "Python Tools: pipx"
-
-echo "All tools have been installed successfully. You can now use them for network administration, penetration testing, vulnerability scanning, red teaming, OSINT, and more."
