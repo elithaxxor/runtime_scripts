@@ -42,6 +42,7 @@ install_security_and_network_tools() {
 
     # Install advanced tools
     echo "Installing advanced tools for red teaming..."
+    sudo apt install -y macchanger
     sudo apt install -y responder          # LLMNR, NBT-NS, and MDNS poisoner
     sudo apt install -y bloodhound         # Active Directory mapping tool
     sudo apt install -y impacket-scripts   # SMB/MSRPC utilities
