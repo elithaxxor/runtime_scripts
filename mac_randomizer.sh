@@ -12,28 +12,33 @@ whatdoido() {
     echo ""
 }
 
-install_macchanger() {
-    echo "Checking if macchanger is installed..."
-    if ! command -v macchanger &> /dev/null; then
-        echo "macchanger not found. Installing macchanger..."
-        sudo apt update
-        sudo apt install -y macchanger
-    else
-        echo "macchanger is already installed."
-    fi
-}
 
 change_mac() {
-# Function to change MAC address
-    # Specify the network interface
-    NETWORK_INTERFACE="wlan0"
 
+   read -p "[!] Enter the network interface (e.g., wlan0): " NETWORK_INTERFACE
+   
+    # Validate user input
+    if [ -z "$NETWORK_INTERFACE" ]; then
+        echo "Error: You must specify a network interface."
+        exit 1
+    fi
+
+    echo "[!] Checking if macchanger is installed..."
+    if ! command -v macchanger &> /dev/null; then
+        echo "[-] macchanger not found. Installing macchanger..."
+        sudo apt update
+        sudo apt install -y macchanger
+        echo "[+] machchanger installed" 
+    else
+        echo "[+] macchanger is already installed."
+    fi
+    
     # Bring the network interface down
-    echo "Bringing $NETWORK_INTERFACE interface down..."
+    echo "[!] Bringing $NETWORK_INTERFACE interface down..."
     sudo ifconfig $NETWORK_INTERFACE down
 
     # Change to a specific MAC address
-    echo "Changing MAC address of $NETWORK_INTERFACE to a specific one (86:E3:20:19:18:CA)..."
+    echo "[!] Changing MAC address of $NETWORK_INTERFACE to a specific one (86:E3:20:19:18:CA)..."
     sudo macchanger -m 86:E3:20:19:18:CA $NETWORK_INTERFACE
     
     # Change to a random MAC address
@@ -41,13 +46,14 @@ change_mac() {
     sudo macchanger -r $NETWORK_INTERFACE
 
 
-    # Bring the network interface up
     echo "Bringing $NETWORK_INTERFACE interface up..."
     sudo ifconfig $NETWORK_INTERFACE up
 
-    echo "MAC address has been changed successfully!"
+    echo "[+] MAC address has been changed successfully!"
+    sudo ifconfig 
+    sudo iwconfig 
+    
 }
 
 whatdoido
-install_macchanger
 change_mac 
