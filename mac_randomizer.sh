@@ -1,18 +1,16 @@
 #!/bin/bash
 
-
-
-
-echo "This script will:"
-echo "1. Bring the specified network interface down."
-echo "2. Change the MAC address to a random one."
-echo "3. Change the MAC address to a specific one (86:E3:20:19:18:CA)."
-echo "4. Bring the network interface back up."
-echo ""
-echo "Note: You will need to edit the script if you want to use a different network interface."
-echo "Currently, the script is set to change the MAC address of wlan0."
-echo ""
-
+whatdoido() {
+    echo "This script will:"
+    echo "1. Bring the specified network interface down."
+    echo "2. Change the MAC address to a random one."
+    echo "3. Change the MAC address to a specific one (86:E3:20:19:18:CA)."
+    echo "4. Bring the network interface back up."
+    echo ""
+    echo "Note: You will need to edit the script if you want to use a different network interface."
+    echo "Currently, the script is set to change the MAC address of wlan0."
+    echo ""
+}
 
 install_macchanger() {
     echo "Checking if macchanger is installed..."
@@ -50,5 +48,6 @@ change_mac() {
     echo "MAC address has been changed successfully!"
 }
 
+whatdoido
 install_macchanger
 change_mac 
