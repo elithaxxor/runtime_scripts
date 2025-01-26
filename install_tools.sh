@@ -53,6 +53,7 @@ install_tools() {
     echo "[!] Installing common dependencies for all tools..."
     sudo apt install -y git build-essential python3-pip python3-dev libssl-dev libffi-dev
 
+
     # Category: Brute Force Tool
     echo -e "\n### Installing Brute Force Tool: Ncrack ###"
     echo "[+] Ncrack is a network authentication cracking tool used to perform brute-force attacks on various network services."
@@ -79,12 +80,50 @@ install_tools() {
     echo "[+] Eyewitness installation complete."
     cd ..
 
+        echo "Updating package repositories..."
+    sudo apt update -y
+
+    # Install dependencies
+    echo "Installing dependencies..."
+    sudo apt install -y git curl python3-pip python3-dev build-essential
+    echo "Cloning Lazy Script repository from GitHub..."
+    git clone https://github.com/psypanda/lazyscript.git
+    cd lazyscript
+    echo "Installing Lazy Script..."
+    chmod +x lazyscript.py
+    sudo python3 lazyscript.py
+
+    echo "Updating package repositories..."
+    sudo apt update -y
+
+    # Install required dependencies
+    echo "Installing dependencies..."
+    sudo apt install -y git curl python3-pip python3-dev build-essential
+
+    # Clone the Sn1per repository from GitHub
+    echo "Cloning Sn1per Framework repository from GitHub..."
+    git clone https://github.com/1N3/Sn1per.git
+
+    # Navigate to the Sn1per directory
+    cd Sn1per
+
+    echo "Running installation script for Sn1per..."
+    chmod +x install.sh
+    sudo ./install.sh
+    echo "Sn1per installation complete!"
+    echo "You can now run Sn1per with the following command: sudo sn1per"
+
+    
+    # Finishing up
+    echo "Lazy Script installation complete!"
+    echo "You can run Lazy Script by navigating to the directory and running: python3 lazyscript.py"
+    
     echo -e "\n### All tools have been installed! ###"
     echo "Summary of the tools installed:"
     echo "1. Ncrack - Brute Force Tool for cracking network authentication."
     echo "2. Airgeddon - Wi-Fi penetration testing tool for cracking WEP/WPA2."
     echo "3. Eyewitness - OSINT tool for web enumeration and server screenshots."
-
+    
     echo -e "\n### How to run the tools ###"
     echo "1. Ncrack: ncrack"
     echo "2. Airgeddon: cd airgeddon && ./airgeddon.sh"
