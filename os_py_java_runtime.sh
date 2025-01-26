@@ -4,16 +4,9 @@
 update_os_and_fetch_versions() {
     echo "[!] Updating the OS and package repositories..."
     
-    # Update the package repositories
     sudo apt update
-    
-    # Upgrade all installed packages
     sudo apt upgrade -y
-    
-    # Perform a distribution upgrade (optional, only if necessary)
     sudo apt dist-upgrade -y
-    
-    # Clean up old packages and dependencies
     sudo apt autoremove -y
     sudo apt clean
 
@@ -21,8 +14,6 @@ update_os_and_fetch_versions() {
     
     # Fetch and install the latest Python version
     sudo apt install -y python3 python3-pip
-    
-    # Update pip to the latest version
     python3 -m pip install --upgrade pip
     
     # Install the latest Python version if needed (Python 3.x)
@@ -43,7 +34,7 @@ update_os_and_fetch_versions() {
     # Verify Java installation
     java -version
 
-    echo "[!] OS and package repositories have been updated. The latest versions of Python and Java are now installed."
+    echo "[+] OS and package repositories have been updated. The latest versions of Python and Java are now installed."
 }
 
 echo "This script will perform the following tasks:"
