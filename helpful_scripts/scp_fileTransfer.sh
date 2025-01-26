@@ -6,4 +6,8 @@ function scpFileTransfer() {
     sftp -b batchfile.txt ~/.ssh/key_name username@hostname.example # using batch in text
 }
 
+echo"[!] Hi "
 scpFileTransfer
+echo"[!] bye " 
+
+
