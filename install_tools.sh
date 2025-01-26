@@ -129,14 +129,33 @@ install_security_and_network_tools() {
     sudo python3 setup.py install
     cd ..
 
-    # Install theHarvestor 
-    #  Install the necessary tools
-
+    # Install theHarvestor // toooling 
     sudo apt install -y netcat dnsutils dnsrecon curl wget httrack python3-pip
     echo "[!] Installing The Harvester..."
     sudo apt install -y theharvester
     pip3 install -r https://raw.githubusercontent.com/larose/theHarvester/master/requirements.txt
     echo "[+] Installation complete!"
+
+    echo "[!] Updating package repositories..."
+    sudo apt update -y
+    echo "[!] Installing dependencies for Kismet..."
+    sudo apt install -y build-essential libpcap-dev libusb-1.0-0-dev libpthread-stubs0-dev libsqlite3-dev \
+        libncurses5-dev libz-dev libtool pkg-config git cmake
+
+    echo "[!] Cloning the Kismet repository from GitHub..."
+    git clone https://github.com/kismetwireless/kismet.git
+    echo "[+] Kismet clone done ..."
+
+    echo "[!] Navigating to Kismet directory..."
+    cd kismet
+    echo "Building Kismet..."
+    ./configure
+    make
+    sudo make install
+    echo "[+] Kismet installation complete!"
+    echo "[+] To start Kismet, run the command: kismet"
+
+    
 
     # Install Tor
     echo "[!] Installing Tor..."
