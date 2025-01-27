@@ -27,9 +27,61 @@ update_os_and_fetch_versions() {
     echo "[+] System updated with the latest Python and Java versions."
 }
 
-# Function to clone, install, and configure tools
+
+
+# Function to clone and install the specified applications
+install_dork_tools() {
+  echo "Starting installation of dork tools..."
+
+  # Define repositories in an associative array
+  declare -A repositories=(
+    ["Fast-Google-Dorks-Scan"]="https://github.com/IvanGlinkin/Fast-Google-Dorks-Scan"
+    ["PyDork"]="https://github.com/blacknon/pydork"
+    ["0xDork"]="https://github.com/rlyonheart/0xdork"
+    ["SDorker"]="https://github.com/TheSpeedX/SDorker"
+    ["ASHOK"]="https://github.com/ankitdobhal/Ashok"
+    ["Pagodo"]="https://github.com/opsdisk/pagodo"
+    ["Katana"]="https://github.com/TebbaaX/Katana"
+    ["GO-Dork"]="https://github.com/dwisiswant0/go-dork"
+    ["Snitch"]="https://github.com/Smaash/snitch"
+    ["Dorks-Eye"]="https://github.com/BullsEye0/dorks-eye"
+    ["SQLI-Dorks-Generator"]="https://github.com/Zold1/sqli-dorks-generator"
+    ["DSH"]="https://github.com/falkensmz/dsh"
+    ["Dork-Hunter"]="https://github.com/six2dez/dorks_hunter"
+  )
+
+  # Iterate through repositories and process each
+  for tool in "${!repositories[@]}"; do
+    echo "Cloning $tool from ${repositories[$tool]}..."
+    git clone "${repositories[$tool]}"
+
+    # Move into the cloned directory and install if necessary
+    dir_name=$(basename "${repositories[$tool]}" .git)
+    if [ -d "$dir_name" ]; then
+      cd "$dir_name"
+
+      # Run installation steps if a setup file exists
+      if [ -f "requirements.txt" ]; then
+        echo "Installing dependencies for $tool..."
+        pip install -r requirements.txt
+      fi
+      if [ -f "setup.py" ]; then
+        echo "Running setup.py for $tool..."
+        python setup.py install
+      fi
+
+      # Return to the parent directory
+      cd ..
+    else
+      echo "Error: Failed to find directory $dir_name after cloning."
+    fi
+  done
+
+  echo "All tools have been processed."
+}
+
+
 install_osint_tools() {
-  # Array of repositories and their suggested aliases
   declare -A tools=(
     ["https://github.com/iojw/socialscan"]="socialscan"
     ["https://github.com/torerobo/maigret"]="maigret"
@@ -129,6 +181,7 @@ install_github_tools() {
 # Final installation wrapper
 install_tools() {
     echo "[+] Starting tool installation..."
+    install_dork_tools
     install_osint_tools
     update_os_and_fetch_versions
     install_security_and_network_tools
