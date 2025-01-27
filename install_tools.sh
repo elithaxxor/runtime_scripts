@@ -28,6 +28,67 @@ update_os_and_fetch_versions() {
 }
 
 
+OSINTII_TOOLS() {
+    repos=(
+      "https://github.com/techgaun/github-dorks.git"
+      "https://github.com/soxoj/maigret.git"
+      "https://github.com/megadose/holehe.git"
+      "https://github.com/p1ngul1n0/blackbird.git"
+      "https://github.com/0xfff0800/Brute-force-Instagram-2025"
+      "https://github.com/Datalux/Osintgram.git"
+      "https://github.com/megadose/nqntnqnqmb.git"
+    )
+    
+    # Log file for tracking the process
+    LOG_FILE="clone_install.log"
+    > "$LOG_FILE"
+    
+    # Function to clone and install a repository
+    clone_and_install() {
+      local repo_url=$1
+      local repo_name=$(basename "$repo_url" .git)
+    
+      echo "Processing: $repo_name" | tee -a "$LOG_FILE"
+    
+      # Clone the repository
+      if git clone "$repo_url" "$repo_name"; then
+        echo "Cloned $repo_name successfully." | tee -a "$LOG_FILE"
+        cd "$repo_name" || exit
+    
+        # Install dependencies if possible
+        if [ -f "requirements.txt" ]; then
+          echo "Installing dependencies from requirements.txt..." | tee -a "../$LOG_FILE"
+          if ! pip install -r requirements.txt; then
+            echo "Failed to install dependencies for $repo_name." | tee -a "../$LOG_FILE"
+          fi
+        elif [ -f "setup.py" ]; then
+          echo "Installing via setup.py..." | tee -a "../$LOG_FILE"
+          if ! python setup.py install; then
+            echo "Failed to install $repo_name via setup.py." | tee -a "../$LOG_FILE"
+          fi
+        else
+          echo "No installation file found for $repo_name." | tee -a "../$LOG_FILE"
+        fi
+    
+        # Go back to the parent directory
+        cd ..
+      else
+        echo "Failed to clone $repo_name." | tee -a "$LOG_FILE"
+      fi
+    
+      echo "----------------------------------------" | tee -a "$LOG_FILE"
+    }
+    
+    # Iterate over each repository
+    for repo in "${repos[@]}"; do
+      clone_and_install "$repo"
+    done
+    
+    echo "All repositories processed. Check $LOG_FILE for details."
+
+}
+
+
 
 # Function to clone and install the specified applications
 install_dork_tools() {
@@ -181,11 +242,13 @@ install_github_tools() {
 # Final installation wrapper
 install_tools() {
     echo "[+] Starting tool installation..."
-    install_dork_tools
     install_osint_tools
     update_os_and_fetch_versions
     install_security_and_network_tools
     install_github_tools
+    OSINTII_TOOLS
+    install_dork_tools
+
     echo "[+] All tools have been successfully installed. Happy hacking!"
 }
 
