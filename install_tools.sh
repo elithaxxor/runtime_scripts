@@ -3,7 +3,61 @@
 # Helper Function to display installed tools
 whatdoido() {
     cat <<EOF
-[!] The install_security_and_network_tools function installs the following tools, organized by their utilization:
+[!] The install_security_
+# Array of GitHub repository URLs
+repos=(
+    "https://github.com/Ha3MrX/DDos-Attack.git"
+    "https://github.com/anti-ddos/Anti-DDOS.git"
+    "https://github.com/HyukIsBack/KARMA-DDoS.git"
+    "https://github.com/Tmpertor/Raven-Storm.git"
+    "https://github.com/4lbH4cker/ALHacking.git"
+    "https://github.com/Ha3MrX/Hacking.git"
+    "https://github.com/D4Vinci/PyFlooder.git"
+    "https://github.com/r3nt0n/torDDoS.git"
+    "https://github.com/PraneethKarnena/DDoS-Scripts.git"
+    "https://github.com/pembriahmad/DDOS.git"
+    "https://github.com/HardyTomas/DDos-Attack-OVH-.git"
+    "https://github.com/saurass/Zombie-DDoS.git"
+    "https://github.com/Err0r-ICA/VARIOUS.git"
+    "https://github.com/DarkSkull777/DarkCool.git"
+    "https://github.com/mishakorzik/AllHackingTools.git"
+    "https://github.com/sammwyy/MikuMikuBeam.git"
+    "https://github.com/palahsu/DDoS-Ripper.git"
+)
+
+# Create a directory for the cloned repositories
+output_dir="cloned_repos"
+mkdir -p "$output_dir"
+
+# Clone and guide the user through the process
+echo "[INFO]: Starting the cloning process."
+for repo in "${repos[@]}"; do
+    repo_name=$(basename "$repo" .git)
+    echo "[INFO]: Cloning $repo into $output_dir/$repo_name..."
+    git clone "$repo" "$output_dir/$repo_name" || error_exit "Failed to clone $repo."
+    echo "[INFO]: Successfully cloned $repo_name."
+    
+    # Check if there's an install script
+    if [[ -f "$output_dir/$repo_name/setup.sh" || -f "$output_dir/$repo_name/install.sh" ]]; then
+        echo "[INFO]: Found an installation script in $repo_name. Running it now."
+        bash "$output_dir/$repo_name/"*install*.sh || echo "[WARNING]: Could not run the installation script for $repo_name."
+    else
+        echo "[INFO]: No installation script found for $repo_name. You may need to install dependencies manually."
+    fi
+done
+
+echo "[INFO]: All repositories have been cloned to the $output_dir directory."
+echo "[INFO]: Please ensure to review and understand the purpose of each repository before running or installing its contents."
+
+# Display final guidance for responsible use
+cat <<EOF
+
+[NOTICE]: This script has cloned several repositories that may include tools for security testing, ethical hacking, or system analysis. 
+           1. **Always use such tools responsibly and legally.** Unauthorized use may violate local or international laws.
+           2. Review each repository's README.md file for proper usage instructions.
+           3. Make sure to run these tools only in environments you own or have explicit permission to test.
+
+EOFand_network_tools function installs the following tools, organized by their utilization:
 [1] Network Administration Tools: net-tools, tcpdump, traceroute, mtr, iperf3, dnsutils, whois, tshark, arp-scan, ettercap-common, dsniff
 [2] Penetration Testing Tools: metasploit-framework, wireshark, nmap, aircrack-ng, john, hashcat, zaproxy, sqlmap, hydra, proxychains, gobuster, dirb, checksec, nikto, wpscan
 [3] Red Teaming & Post-Exploitation Tools: responder, bloodhound, impacket-scripts, crackmapexec, seclists, nishang, powersploit, enum4linux, recon-ng
@@ -28,6 +82,65 @@ update_os_and_fetch_versions() {
 }
 
 
+
+DDOS_Tools() {
+
+# Array of GitHub repository URLs
+repos=(
+    "https://github.com/Ha3MrX/DDos-Attack.git"
+    "https://github.com/anti-ddos/Anti-DDOS.git"
+    "https://github.com/HyukIsBack/KARMA-DDoS.git"
+    "https://github.com/Tmpertor/Raven-Storm.git"
+    "https://github.com/4lbH4cker/ALHacking.git"
+    "https://github.com/Ha3MrX/Hacking.git"
+    "https://github.com/D4Vinci/PyFlooder.git"
+    "https://github.com/r3nt0n/torDDoS.git"
+    "https://github.com/PraneethKarnena/DDoS-Scripts.git"
+    "https://github.com/pembriahmad/DDOS.git"
+    "https://github.com/HardyTomas/DDos-Attack-OVH-.git"
+    "https://github.com/saurass/Zombie-DDoS.git"
+    "https://github.com/Err0r-ICA/VARIOUS.git"
+    "https://github.com/DarkSkull777/DarkCool.git"
+    "https://github.com/mishakorzik/AllHackingTools.git"
+    "https://github.com/sammwyy/MikuMikuBeam.git"
+    "https://github.com/palahsu/DDoS-Ripper.git"
+)
+
+# Create a directory for the cloned repositories
+output_dir="cloned_repos"
+mkdir -p "$output_dir"
+
+# Clone and guide the user through the process
+echo "[INFO]: Starting the cloning process."
+for repo in "${repos[@]}"; do
+    repo_name=$(basename "$repo" .git)
+    echo "[INFO]: Cloning $repo into $output_dir/$repo_name..."
+    git clone "$repo" "$output_dir/$repo_name" || error_exit "Failed to clone $repo."
+    echo "[INFO]: Successfully cloned $repo_name."
+    
+    # Check if there's an install script
+    if [[ -f "$output_dir/$repo_name/setup.sh" || -f "$output_dir/$repo_name/install.sh" ]]; then
+        echo "[INFO]: Found an installation script in $repo_name. Running it now."
+        bash "$output_dir/$repo_name/"*install*.sh || echo "[WARNING]: Could not run the installation script for $repo_name."
+    else
+        echo "[INFO]: No installation script found for $repo_name. You may need to install dependencies manually."
+    fi
+done
+
+echo "[INFO]: All repositories have been cloned to the $output_dir directory."
+echo "[INFO]: Please ensure to review and understand the purpose of each repository before running or installing its contents."
+
+# Display final guidance for responsible use
+cat <<EOF
+
+[NOTICE]: This script has cloned several repositories that may include tools for security testing, ethical hacking, or system analysis. 
+           1. **Always use such tools responsibly and legally.** Unauthorized use may violate local or international laws.
+           2. Review each repository's README.md file for proper usage instructions.
+           3. Make sure to run these tools only in environments you own or have explicit permission to test.
+
+EOF
+
+}
 OSINTII_TOOLS() {
     repos=(
       "https://github.com/techgaun/github-dorks.git"
@@ -248,6 +361,7 @@ install_tools() {
     install_github_tools
     OSINTII_TOOLS
     install_dork_tools
+    DDOS_Tools 
 
     echo "[+] All tools have been successfully installed. Happy hacking!"
 }
