@@ -27,7 +27,7 @@ whatDidIdo() {
 # Install required dependencies
 install_dependencies() {
     echo "\nInstalling dependencies..."
-    sudo apt install -y snmp miniupnpc
+    sudo apt install -y snmp miniupnpc dig nslookup 
 }
 
 # Retrieve local IP address
@@ -64,6 +64,43 @@ get_wan_ip() {
 get_router_mac() {
     local router_mac=$(arp -n | grep -m1 "$(get_router_ip)" | awk '{print $3}')
     echo "Router MAC Address: $router_mac"
+}
+get_arp_table_with_hostnames() {
+    echo "Fetching ARP table and resolving hostnames..."
+    
+    # Copy the ARP table
+    arp_table=$(arp -a)
+
+    # Initialize an array to store discovered IPs
+    discovered_ips=()
+
+    # Print table header
+    printf "%-20s %-20s %-20s\n" "IP Address" "MAC Address" "Hostname"
+    echo "------------------------------------------------------------"
+
+    # Process each line of the ARP table
+    echo "$arp_table" | while read -r line; do
+        ip=$(echo "$line" | awk '{print $2}' | tr -d '()')
+        mac=$(echo "$line" | awk '{print $4}')
+        hostname=$(nslookup "$ip" 2>/dev/null | awk '/name =/ {print $4}' | sed 's/\.$//')
+
+        # If no hostname is found, use "Unknown"
+        if [ -z "$hostname" ]; then
+            hostname="Unknown"
+        fi
+
+        # Store discovered IP
+        if [ -n "$ip" ]; then
+            discovered_ips+=("$ip")
+        fi
+
+        # Print formatted output
+        printf "%-20s %-20s %-20s\n" "$ip" "$mac" "$hostname"
+    done
+
+    # Print all discovered IPs
+    echo -e "\nDiscovered IP Addresses:"
+    printf "%s\n" "${discovered_ips[@]}"
 }
 
 # Retrieve router make and model
@@ -107,7 +144,31 @@ get_router_firmware() {
     echo "Router Firmware: Unknown (Check router web interface manually)"
 }
 
-# Main function
+get_router_dns_table() {
+    output_file="router_dns_table.txt"
+
+    echo "Fetching local DNS table from the router..."
+    echo "Local DNS Table:" > "$output_file"
+
+    # Get router IP address (assumes default gateway is the router)
+    router_ip=$(ip route | grep default | awk '{print $3}')
+    echo "Router IP: $router_ip" | tee -a "$output_file"
+
+    echo -e "\nLocal DNS Entries:" | tee -a "$output_file"
+
+    # Attempt to retrieve DNS records via nslookup
+    for ip in $(seq 1 254); do
+        hostname=$(nslookup 192.168.1.$ip "$router_ip" 2>/dev/null | awk '/name =/ {print $4}' | sed 's/\.$//')
+        if [ -n "$hostname" ]; then
+            echo "192.168.1.$ip - $hostname" | tee -a "$output_file"
+        fi
+    done
+
+    echo -e "\nDNS table saved to $output_file"
+}
+
+
+
 main() {
     whatDoIdO
 
@@ -124,11 +185,11 @@ main() {
     get_router_mac
     get_router_make_model
     get_router_firmware
-    
+    get_arp_table_with_hostnames
+    get_router_dns_table
     whatDidIdo
 }
 
-echo "\nStarting network scan..."
+echo "hi"
 main
-
-echo "\nScript execution completed."
+echo "\nbye"
