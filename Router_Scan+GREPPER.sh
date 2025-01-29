@@ -1,10 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Display script information
+########################
+# COLOR DEFINITIONS
+########################
+CYAN='\033[1;36m'
+WHITE='\033[1;37m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+MAGENTA='\033[1;35m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+########################
+# 1) Display Script Info
+########################
 whatDoIdO() {
-    echo "\n========================================="
-    echo "      NETWORK INFORMATION SCRIPT       "
-    echo "========================================="
+    echo -e "\n${CYAN}========================================="
+    echo -e "      NETWORK INFORMATION SCRIPT        "
+    echo -e "=========================================${NC}"
     echo "This script retrieves and displays:"
     echo "- Local IP Address"
     echo "- Router IP Address"
@@ -14,19 +27,24 @@ whatDoIdO() {
     echo "- DNS Servers"
     echo "- WAN IP Address"
     echo "- ARP Table Scan"
-    echo "========================================="
 }
 
-# Summary after execution
+########################
+# 2) Summary After Execution
+########################
 whatDidIdo() {
-    echo "\n========================================="
-    echo "           SUMMARY OF RESULTS           "
-    echo "========================================="
+    echo -e "\n${CYAN}========================================="
+    echo -e "           SUMMARY OF RESULTS           "
+    echo -e "=========================================${NC}"
 }
 
+########################
+# 3) Install Dependencies
+########################
 install_dependencies() {
-    echo "Attempting to install SNMP and UPnP packages..."
-    sudo apt install -y snmp miniupnpc dig nslookup 
+    echo -e "\n${WHITE}Attempting to install SNMP and UPnP packages...${NC}"
+    # Minimal attempt for Debian/Ubuntu
+    sudo apt install -y snmp miniupnpc dnsutils 2>/dev/null || true
 
     # Check for a Debian/Ubuntu-based system
     if [ -x "$(command -v apt-get)" ]; then
@@ -36,10 +54,15 @@ install_dependencies() {
     elif [ -x "$(command -v yum)" ]; then
         sudo yum install -y net-snmp miniupnpc
     else
-        echo "No compatible package manager found. Please install 'snmp' and 'miniupnpc' manually."
+        echo -e "${YELLOW}No compatible package manager found. Please install 'snmp' and 'miniupnpc' manually.${NC}"
     fi
 }
 
+########################
+# 4) Save Discovered Data
+########################
+# This function references an array named `discovered_data`.
+# Make sure you have `discovered_data` populated before calling it.
 save_discovered_data() {
     local txt_file="discovered_data.txt"
     local json_file="discovered_data.json"
@@ -78,34 +101,42 @@ save_discovered_data() {
     # Close the JSON array
     echo "]" >> "$json_file"
 
-    echo "Data saved to:"
+    echo -e "\n${GREEN}Data saved to:"
     echo " - $txt_file"
-    echo " - $json_file"
+    echo " - $json_file${NC}"
 }
 
-
-
-# Retrieve DNS servers
+########################
+# 5) DNS Servers
+########################
 get_dns_servers() {
-    echo "DNS Servers:"
+    echo -e "\n${MAGENTA}DNS Servers:${NC}"
     awk '/^nameserver/ {print " - "$2}' /etc/resolv.conf
 }
 
-# Retrieve WAN IP address
+########################
+# 6) WAN IP
+########################
 get_wan_ip() {
-    local wan_ip=$(curl -s https://api64.ipify.org)
-    echo "WAN IP Address: $wan_ip"
+    local wan_ip
+    wan_ip=$(curl -s https://api64.ipify.org)
+    echo -e "${MAGENTA}WAN IP Address:${NC} $wan_ip"
 }
 
-# Retrieve router MAC address
+########################
+# 7) Router MAC
+########################
 get_router_mac() {
-    local router_mac=$(arp -n | grep -m1 "$(get_router_ip)" | awk '{print $3}')
-    echo "Router MAC Address: $router_mac"
+    local router_mac
+    router_mac=$(arp -n | grep -m1 "$(get_router_ip)" | awk '{print $3}')
+    echo -e "${MAGENTA}Router MAC Address:${NC} $router_mac"
 }
 
-
+########################
+# 8) ARP Table + Hostnames
+########################
 get_arp_table_with_hostnames() {
-    echo "Fetching ARP table and resolving hostnames..."
+    echo -e "\n${CYAN}Fetching ARP table and resolving hostnames...${NC}"
     
     # Copy the ARP table
     arp_table=$(arp -a)
@@ -114,7 +145,7 @@ get_arp_table_with_hostnames() {
     discovered_ips=()
 
     # Print table header
-    printf "%-20s %-20s %-20s\n" "IP Address" "MAC Address" "Hostname"
+    echo -e "${WHITE}%-20s %-20s %-20s${NC}" | xargs printf "   %s %s %s\n" "IP Address" "MAC Address" "Hostname"
     echo "------------------------------------------------------------"
 
     # Process each line of the ARP table
@@ -137,11 +168,16 @@ get_arp_table_with_hostnames() {
         printf "%-20s %-20s %-20s\n" "$ip" "$mac" "$hostname"
     done
 
-    # 1_ Print all discovered IPs
-    echo -e "\nDiscovered IP Addresses:"
+    # 1) Print all discovered IPs
+    echo -e "\n${MAGENTA}Discovered IP Addresses:${NC}"
     printf "%s\n" "${discovered_ips[@]}"
-    
-    # 2) Write to JSON
+
+    # 2) Save discovered IPs to JSON
+    local output_txt="discovered_ips.txt"
+    local output_json="discovered_ips.json"
+    > "$output_txt"
+    > "$output_json"
+
     echo "[" >> "$output_json"
     local first_record=true
     for ip in "${discovered_ips[@]}"; do
@@ -152,78 +188,84 @@ get_arp_table_with_hostnames() {
             echo "," >> "$output_json"
         fi
         echo "  { \"ip\": \"$ip\" }" >> "$output_json"
+        # Also append to a discovered_ips.txt file
+        echo "$ip" >> "$output_txt"
     done
     echo "]" >> "$output_json"
 
     # Print console message
-    echo -e "\nSaved discovered IPs to:"
+    echo -e "\n${GREEN}Saved discovered IPs to:"
     echo " - $output_txt"
-    echo " - $output_json"
+    echo -e " - $output_json${NC}"
 }
 
-# Retrieve local IP address
+########################
+# 9) Local IP
+########################
 get_local_ip() {
-    local ip_address=$(ip route get 1 | awk '{print $7; exit}')
-    echo "Local IP Address: $ip_address"
+    local ip_address
+    ip_address=$(ip route get 1 | awk '{print $7; exit}')
+    echo -e "${MAGENTA}Local IP Address:${NC} $ip_address"
 }
 
-# Retrieve router IP address
+########################
+# 10) Router IP
+########################
 get_router_ip() {
-    # Pull the default gateway (assumed router IP)
     local router_ip
     router_ip=$(ip route | grep 'default' | awk '{print $3}' | head -n 1)
-
     if [ -z "$router_ip" ]; then
-        echo "Could not detect router IP via 'ip route'."
+        echo -e "${RED}Could not detect router IP via 'ip route'.${NC}"
         return 1
     fi
-
     echo "$router_ip"
     return 0
 }
 
+########################
+# 11) Subnet Mask
+########################
+get_subnet_mask() {
+    local subnet_mask
+    subnet_mask=$(ifconfig 2>/dev/null | grep -w 'netmask' | awk '{print $4}' | head -n 1)
+    # Some distros may use 'Mask:' or different syntax. Adjust as needed.
+    echo -e "${MAGENTA}Subnet Mask:${NC} $subnet_mask"
+}
+
+########################
+# 12) Router DNS Table
+########################
 get_router_dns_table() {
     local router_ip
     router_ip=$(get_router_ip)
     if [ $? -ne 0 ] || [ -z "$router_ip" ]; then
-        echo "Router IP not found. Aborting local DNS table retrieval."
+        echo -e "${RED}Router IP not found. Aborting local DNS table retrieval.${NC}"
         return 1
     fi
 
-    echo "Using router IP: $router_ip"
-
-    # Output files
+    echo -e "\n${CYAN}Using router IP: $router_ip${NC}"
     local txt_file="router_dns_table.txt"
     local json_file="router_dns_table.json"
 
-    # Clear previous files
     > "$txt_file"
     > "$json_file"
 
-    echo "Fetching local DNS data (SNMP, UPnP, and fallback)..." | tee -a "$txt_file"
+    echo -e "${MAGENTA}Fetching local DNS data (SNMP, UPnP, and fallback)...${NC}" | tee -a "$txt_file"
     echo "Router IP: $router_ip" | tee -a "$txt_file"
 
-    # Start the JSON array
+    # Start JSON
     echo "[" >> "$json_file"
 
-    # We'll store all findings in an array of strings: "IP|HOSTNAME"
     local dns_results=()
 
-    ########################################################
-    # 3.1) SNMP Attempt
-    ########################################################
+    # SNMP Attempt
     echo -e "\n--- SNMP Attempt ---" | tee -a "$txt_file"
     if command -v snmpwalk &>/dev/null; then
-        # We'll grep any lines containing 'dns' or 'host'
-        # NOTE: This is highly router-dependent and may need adjustments.
         snmp_data=$(snmpwalk -v2c -c public "$router_ip" 1.3.6.1.4.1 2>/dev/null | grep -iE "dns|host")
-
         if [ -n "$snmp_data" ]; then
             echo "SNMP data found (filtered by 'dns|host'):" | tee -a "$txt_file"
             echo "$snmp_data" | tee -a "$txt_file"
-
             while read -r line; do
-                # Attempt to parse an IP and a host from the line
                 possible_ip=$(echo "$line" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}')
                 possible_host=$(echo "$line" | grep -oE '([A-Za-z0-9_-]+\.[A-Za-z0-9._-]+)')
                 if [ -n "$possible_ip" ] && [ -n "$possible_host" ]; then
@@ -237,16 +279,13 @@ get_router_dns_table() {
         echo "snmpwalk not available. Skipping SNMP attempt." | tee -a "$txt_file"
     fi
 
-    ########################################################
-    # 3.2) UPnP Attempt
-    ########################################################
+    # UPnP Attempt
     echo -e "\n--- UPnP Attempt ---" | tee -a "$txt_file"
     if command -v upnpc &>/dev/null; then
         upnp_data=$(upnpc -l 2>/dev/null)
         if [ -n "$upnp_data" ]; then
             echo "UPnP data found:" | tee -a "$txt_file"
             echo "$upnp_data" | tee -a "$txt_file"
-
             while read -r line; do
                 possible_ip=$(echo "$line" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}')
                 possible_host=$(echo "$line" | grep -oE '([A-Za-z0-9_-]+\.[A-Za-z0-9._-]+)')
@@ -261,13 +300,10 @@ get_router_dns_table() {
         echo "upnpc not available. Skipping UPnP attempt." | tee -a "$txt_file"
     fi
 
-    ########################################################
-    # 3.3) Fallback DNS Brute Force
-    ########################################################
+    # Fallback DNS Brute Force
     echo -e "\n--- Fallback DNS Brute Force ---" | tee -a "$txt_file"
-    # Make sure nslookup is available
     if command -v nslookup &>/dev/null; then
-        # Adjust this to match your LAN subnet
+        # Adjust this subnet as needed
         local subnet_prefix="192.168.1"
         for i in {1..254}; do
             local test_ip="${subnet_prefix}.${i}"
@@ -278,12 +314,10 @@ get_router_dns_table() {
         done
         echo "Brute force complete." | tee -a "$txt_file"
     else
-        echo "nslookup not available. Install dnsutils (Debian/Ubuntu) or bind-utils (Red Hat) for fallback." | tee -a "$txt_file"
+        echo "nslookup not available. Install dnsutils or bind-utils for fallback." | tee -a "$txt_file"
     fi
 
-    ########################################################
-    # 3.4) Remove duplicates & sort
-    ########################################################
+    # Remove duplicates & sort
     local sorted_unique_dns
     sorted_unique_dns=$(echo "${dns_results[@]}" | tr ' ' '\n' | sort -u)
 
@@ -291,22 +325,16 @@ get_router_dns_table() {
     if [ -z "$sorted_unique_dns" ]; then
         echo "No DNS entries found." | tee -a "$txt_file"
     else
-        # Print each to the screen and the .txt file
         while read -r entry; do
             ip="${entry%%|*}"
             host="${entry##*|}"
-
-            # Skip any blank lines
             [ -z "$ip" ] && continue
             [ -z "$host" ] && continue
-
             echo "IP: $ip   Hostname: $host" | tee -a "$txt_file"
         done <<< "$sorted_unique_dns"
     fi
 
-    ########################################################
-    # 3.5) Write JSON Output
-    ########################################################
+    # Write JSON
     local first_record=true
     while read -r entry; do
         ip="${entry%%|*}"
@@ -319,99 +347,106 @@ get_router_dns_table() {
         else
             echo "," >> "$json_file"
         fi
-
         echo "  { \"ip\": \"$ip\", \"hostname\": \"$host\" }" >> "$json_file"
     done <<< "$sorted_unique_dns"
 
     echo "]" >> "$json_file"
 
-    echo -e "\nDNS table saved to:"
+    echo -e "\n${GREEN}DNS table saved to:"
     echo " - Text:  $txt_file"
-    echo " - JSON:  $json_file"
+    echo -e " - JSON:  $json_file${NC}"
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Retrieve router make and model
+########################
+# 13) Router Make & Model
+########################
 get_router_make_model() {
-    local router_ip=$(get_router_ip)
-    local make_model=$(curl -s "http://$router_ip" | grep -i -o -E "Netgear|TP-Link|Asus|Linksys|D-Link|Cisco|Arris|Motorola|Ubiquiti|MikroTik" | head -n 1)
+    local router_ip
+    router_ip=$(get_router_ip)
+    local make_model
+    make_model=$(curl -s "http://$router_ip" | grep -i -o -E "Netgear|TP-Link|Asus|Linksys|D-Link|Cisco|Arris|Motorola|Ubiquiti|MikroTik" | head -n 1)
     make_model=${make_model:-"Unknown (Check router web interface manually)"}
-    echo "Router Make & Model: $make_model"
+    echo -e "${MAGENTA}Router Make & Model:${NC} $make_model"
 }
 
-# Retrieve router firmware version
+########################
+# 14) Router Firmware
+########################
 get_router_firmware() {
-    local router_ip=$(get_router_ip)
-    echo "\nChecking Router Firmware Version..."
+    local router_ip
+    router_ip=$(get_router_ip)
+    echo -e "\n${CYAN}Checking Router Firmware Version...${NC}"
 
-    # Try SNMP
+    # SNMP
     if command -v snmpwalk &>/dev/null; then
         firmware_snmp=$(snmpwalk -v2c -c public "$router_ip" 1.3.6.1.2.1.1.1.0 2>/dev/null | awk -F ': ' '{print $2}')
-        if [ ! -z "$firmware_snmp" ]; then
-            echo "Router Firmware (SNMP): $firmware_snmp"
+        if [ -n "$firmware_snmp" ]; then
+            echo -e "${MAGENTA}Router Firmware (SNMP):${NC} $firmware_snmp"
             return
         fi
     fi
 
-    # Try HTTP
+    # HTTP
     firmware_http=$(curl -s "http://$router_ip" | grep -i -oE "Firmware Version[: ]?[0-9A-Za-z.\-]+" | head -n 1)
-    if [ ! -z "$firmware_http" ]; then
-        echo "Router Firmware (HTTP): $firmware_http"
+    if [ -n "$firmware_http" ]; then
+        echo -e "${MAGENTA}Router Firmware (HTTP):${NC} $firmware_http"
         return
     fi
 
-    # Try UPnP
+    # UPnP
     if command -v upnpc &>/dev/null; then
         firmware_upnp=$(upnpc -l 2>/dev/null | grep -i "firmware" | awk -F ': ' '{print $2}')
-        if [ ! -z "$firmware_upnp" ]; then
-            echo "Router Firmware (UPnP): $firmware_upnp"
+        if [ -n "$firmware_upnp" ]; then
+            echo -e "${MAGENTA}Router Firmware (UPnP):${NC} $firmware_upnp"
             return
         fi
     fi
 
-    echo "Router Firmware: Unknown (Check router web interface manually)"
+    echo -e "${YELLOW}Router Firmware: Unknown (Check router web interface manually)${NC}"
 }
 
-
-
+########################
+# 15) MAIN
+########################
 main() {
+    # 1) Intro
     whatDoIdO
 
+    # 2) Install Dependencies
     install_dependencies
 
-    echo "\n-----------------------------------------"
+    # 3) Show Network Details
+    echo -e "\n${CYAN}-----------------------------------------"
     echo "             NETWORK DETAILS             "
-    echo "-----------------------------------------"
+    echo -e "-----------------------------------------${NC}"
+
     get_local_ip
-    get_router_ip
+    local router_ip
+    router_ip=$(get_router_ip)
+    if [ $? -eq 0 ]; then
+        echo -e "${MAGENTA}Router IP Address:${NC} $router_ip"
+    fi
+
     get_subnet_mask
     get_dns_servers
     get_wan_ip
     get_router_mac
     get_router_make_model
     get_router_firmware
+
+    # 4) ARP Table
     get_arp_table_with_hostnames
+
+    # 5) Router DNS Table
     get_router_dns_table
+
+    # 6) Summary
     whatDidIdo
 }
-File Outputs
 
-    router_dns_table.txt – Human-readable text with any discovered entries.
-    router_dns_table.json – JSON array of { "ip": "...", "hostname": "..." } objects.
-echo "hi"
+########################
+# 16) Run It All
+########################
+echo -e "${GREEN}hi${NC}"
 main
-echo "\nbye"
+echo -e "\n${GREEN}bye${NC}"
