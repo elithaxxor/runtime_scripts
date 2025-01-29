@@ -31,18 +31,41 @@ get_free_ip_grabber() {
     echo "Free IP Grabber URL: $grabber_url"
 }
 
+get_router_mac() {
+    local router_mac
+    router_mac=$(arp -n | grep -m1 "$(get_router_ip)" | awk '{print $3}')
+    echo "Router MAC Address: $router_mac"
+}
+
+get_router_make_model() {
+    local router_ip
+    router_ip=$(get_router_ip)
+    local make_model
+    make_model=$(curl -s "http://$router_ip" | grep -i -o -E "Netgear|TP-Link|Asus|Linksys|D-Link|Cisco|Arris|Motorola|Ubiquiti|MikroTik" | head -n 1)
+    if [ -z "$make_model" ]; then
+        make_model="Unknown (Try accessing router's web interface manually)"
+    fi
+    echo "Router Make & Model: $make_model"
+}
+
 explain_program() {
     echo "This script retrieves and displays network-related information, including:"
     echo "- Local IP Address: The private IP assigned to your device on the network."
+    echo "- Router IP Address: The default gateway address of the network."
+    echo "- Router MAC Address: The MAC address of the router."
+    echo "- Router Make & Model: The detected brand/model of the router."
     echo "- DNS Servers: The DNS resolvers your system is using."
     echo "- WAN IP Address: The public IP address assigned by your ISP."
-    echo "- Free IP Grabber: A link to a free IP tracking service."
     echo "Use this script for network diagnostics and monitoring."
 }
 
-# Call the functions
-explain_program
-get_local_ip
-get_dns_servers
-get_wan_ip
-get_free_ip_grabber
+main(){
+    explain_program
+    get_wan_ip
+    get_router_ip
+    get_dns_servers
+    get_router_mac
+    get_local_ip
+    get_router_make_model
+}
+main 
