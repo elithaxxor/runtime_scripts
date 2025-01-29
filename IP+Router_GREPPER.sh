@@ -6,7 +6,19 @@
     3. get_router_make_model: Attempts to detect the router's make and model by fetching its web interface and checking for common brand names.
 """
 
-explain_program() {
+whatDoIdO() {
+    echo "This script retrieves and displays network-related information, including:"
+    echo "- Local IP Address: The private IP assigned to your device on the network."
+    echo "- Router IP Address: The default gateway address of the network."
+    echo "- Router MAC Address: The MAC address of the router."
+    echo "- Router Make & Model: Attempts to identify the brand/model of the router."
+    echo "- Router Firmware Version: Tries to fetch the firmware version using SNMP, HTTP, or UPnP."
+    echo "- DNS Servers: Lists the DNS resolvers your system is using."
+    echo "- WAN IP Address: The public IP address assigned by your ISP."
+    echo "- ARP Table Scan: Gathers devices on the local network, including their IPs, MAC addresses, and hostnames."
+    echo "This script is useful for network diagnostics, security audits, and monitoring connected devices."
+}
+whatDidIdo() {
     echo "This script retrieves and displays network-related information"
     echo "- Router MAC Address: The MAC address of the router."
     echo "- Router Make & Model: The detected brand/model of the router."
@@ -110,8 +122,9 @@ get_router_firmware() {
 
 
 main(){
-    explain_program
-
+    
+    whatDoIdO()
+    
     echo "installing dependecies" 
     install_dependencies
     
@@ -134,6 +147,7 @@ main(){
 
     echo "get_router_make_model: Attempts to detect the router's make and model by fetching its web interface and checking for common brand names."
     get_router_make_model
+    whatDidIdo()
 }
 
 echo "hi"
