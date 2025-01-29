@@ -40,6 +40,48 @@ install_dependencies() {
     fi
 }
 
+save_discovered_data() {
+    local txt_file="discovered_data.txt"
+    local json_file="discovered_data.json"
+
+    # Clear (or create) both files
+    > "$txt_file"
+    > "$json_file"
+
+    # 1) Write a header to the TXT file
+    printf "%-20s %-20s %-20s\n" "IP Address" "MAC Address" "Hostname" >> "$txt_file"
+    printf "%-20s %-20s %-20s\n" "----------" "-----------" "---------" >> "$txt_file"
+
+    # 2) Start the JSON array
+    echo "[" >> "$json_file"
+    local first_record=true
+
+    # 3) Loop through the discovered data
+    for entry in "${discovered_data[@]}"; do
+        ip="${entry%%|*}"
+        remainder="${entry#*|}"
+        mac="${remainder%%|*}"
+        hostname="${remainder#*|}"
+
+        # Print nicely to the TXT file
+        printf "%-20s %-20s %-20s\n" "$ip" "$mac" "$hostname" >> "$txt_file"
+
+        # Write each item as a JSON object
+        if [ "$first_record" = true ]; then
+            first_record=false
+        else
+            echo "," >> "$json_file"
+        fi
+        echo "  { \"ip\": \"$ip\", \"mac\": \"$mac\", \"hostname\": \"$hostname\" }" >> "$json_file"
+    done
+
+    # Close the JSON array
+    echo "]" >> "$json_file"
+
+    echo "Data saved to:"
+    echo " - $txt_file"
+    echo " - $json_file"
+}
 
 
 
