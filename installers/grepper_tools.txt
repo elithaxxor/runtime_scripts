@@ -1,0 +1,9 @@
+https://github.com/cipher387/awesome-grep
+https://github.com/MoserMichael/rzgrep
+https://github.com/TUVIMEN/reliq
+https://github.com/awgn/cgrep
+https://github.com/o-oconnell/mp4grep
+https://github.com/codypierce/hackers-grep
+https://github.com/grosser/pru
+https://github.com/fulcrumgenomics/fqgrep
+https://github.com/vrothberg/vgrep

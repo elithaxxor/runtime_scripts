@@ -1,0 +1,12 @@
+https://github.com/davidonzo/apiosintDS.git
+https://github.com/fawazahmed0/cloudflare-trace-api.git
+https://github.com/cipher387/awesome-grep.git
+https://github.com/Josue87/EmailFinder.git
+https://github.com/IxAmxZer0/Wifi-Biter.git
+https://github.com/calebmadrigal/trackerjacker.git
+https://github.com/t6x/reaver-wps-fork-t6x.git
+https://github.com/aircrack-ng/mdk4.git
+https://github.com/xtr4nge/FruityWifi.git
+https://github.com/entropy1337/infernal-twin.git
+https://github.com/Ledger-Donjon/intel-wifi-research-tools.git
+https://github.com/virtualabs/btlejack.git
