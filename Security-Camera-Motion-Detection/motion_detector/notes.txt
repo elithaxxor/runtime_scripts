@@ -1,0 +1,38 @@
+
+'''
+pip3 install opencv-python
+1. set greyscale frame
+2. set image kernal to 21x2 grid,
+3. blur screen in smaller frame
+4. set condition to keep greyscale blurred
+5. $$ set logic for video capture if frame is presented $$
+6. resize frame after condition is met
+7. use cv2.absdiff to find difference between greyscale img and recorded frame
+8. apply cv2.thresholding to seperate background image from foreground image
+## thresholding is the binazation of images. Converts greyscale back to binary (px 0 or 255)
+## use to seperate forground and backgorund imagse
+'''
+
+'''
+:: SAMPLE BASIC THRESHOLDING ::
+1. CONVERT TO GREYSCALE
+2. APPLY 7X7 GAUSSIAN BLUR
+3. APPLY THRESHILD
+## FIRST PARAMETER IS IMAGE, 2ND IS 'THRESHOLD CHECK'
+## IF PIXLE IS GREATER THAN 200, SET TO BLACK
+## ELSE SET IT TO WHITE
+image = cv2.imread(args["image"])
+cv2.imshow("Image", image)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+blurred = cv2.GaussianBlur(gray, (7, 7), 0)
+(T, threshInv) = cv2.threshold(blurred, 200, 255,
+	cv2.THRESH_BINARY_INV)
+cv2.imshow("Threshold Binary Inverse", threshInv)
+(T, threshInv) = cv2.threshold(blurred, 200, 255,
+	cv2.THRESH_BINARY_INV)
+cv2.imshow("Threshold Binary Inverse", threshInv)
+CONTOURS GIVE DIFFERNT OUTPUTS (IMAGE, CONTOUR AND ARCHY. THE CONTOUR IS SET TO BLUE
+CV2.CHAIN_APPROX_SIMPLE REMOVES REDUNDENCY AND COMPRESSES IMAGE
+SET CONDITION, IF CONTOURAREA  IS LARGER THAN 800
+'''
+
