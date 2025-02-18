@@ -1,4 +1,4 @@
-# DNS Server Enhancements
+#############n ICU_Camera_Recognition ###########
 
 
 ### 🎉 Highlights:
@@ -7,12 +7,9 @@
 ✔ **Formatted code for clarity**  
 ✔ **Attractive with icons & section breaks**  
 
-Let me know if you need further customizations! 🚀
-
-🎯 Future Enhancements
-
+🎯 Future Enhancements [TODO LIST]
 🔹 Email/Push Notifications: Send alerts when motion is detected.
-🔹 Cloud Storage Integration: Save captured frames in the cloud.
+🔹 Cloud Storage Integration: Save captured frames in the cloud. / Discord and Signal. 
 🔹 Multi-Camera Support: Enable motion detection on multiple webcams.
 
 🚀 Usage
